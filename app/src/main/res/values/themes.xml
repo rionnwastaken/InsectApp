@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.RandomInsect" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Change parent to Theme.MaterialComponents.DayNight.NoActionBar -->
+    <style name="Theme.RandomInsect" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your light/dark theme colors here -->
+    </style>
 </resources>
