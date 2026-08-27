@@ -9,6 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+
+interface Insect {
+
+  fun attack()
+
+  fun sleep()
+
+  fun eat()
+}
+
 class InsectListFragment : Fragment(R.layout.fragment_insect_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
