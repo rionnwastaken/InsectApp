@@ -1,38 +1,29 @@
 package com.example.randominsect
 
-
-
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.navigation.compose.rememberNavController
+import com.example.randominsect.navigation.NavGraph
+import com.example.randominsect.ui.theme.RandomInsectTheme
+import com.example.randominsect.ui.viewmodel.InsectViewModel
 
-class MainActivity : AppCompatActivity() {
-
-    val insectList = mutableListOf<String>()
+class MainActivity : ComponentActivity() {
+    private val insectViewModel: InsectViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-
-        loadFragment(HomeFragment())
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> loadFragment(HomeFragment())
-                R.id.nav_register -> loadFragment(RegisterFragment())
-                R.id.nav_list -> loadFragment(InsectListFragment())
-                else -> false
+        enableEdgeToEdge()
+        setContent {
+            RandomInsectTheme {
+                val navController = rememberNavController()
+                NavGraph(
+                    navController = navController,
+                    viewModel = insectViewModel
+                )
             }
         }
-    }
-
-    private fun loadFragment(fragment: Fragment): Boolean {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-        return true
     }
 }

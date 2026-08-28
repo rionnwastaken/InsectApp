@@ -60,4 +60,16 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.appcompat:appcompat:1.6.1") // Use the latest stable version
 implementation("com.google.android.material:material:1.12.0")
+
+// Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+
+    // ViewModel Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+    // Coil para carga de imágenes
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+
+
 }
