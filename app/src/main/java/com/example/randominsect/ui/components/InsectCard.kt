@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.randominsect.data.model.Insect
+import com.example.randominsect.ui.components.ImageDetailDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +28,7 @@ fun InsectCard(
     onDelete: (Insect) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showImageModal by remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
     val dismissState = rememberSwipeToDismissBoxState(
@@ -90,6 +92,7 @@ fun InsectCard(
                             modifier = Modifier
                                 .size(64.dp)
                                 .clip(RoundedCornerShape(8.dp)),
+                                .clickable { showImageModal = true },
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -122,5 +125,15 @@ fun InsectCard(
                 }
             }
         }
+
+        if (showImageModal) {
+            ImageDetailDialog(
+                imageUri = insect.imageUri,
+                contentDescription = insect.nombreComun,
+                onDismiss = { showImageModal = false }
+            )
+        }
+
+
     }
 }
