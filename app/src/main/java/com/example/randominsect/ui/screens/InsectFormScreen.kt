@@ -20,6 +20,30 @@ import coil.compose.AsyncImage
 import com.example.randominsect.data.model.Insect
 import com.example.randominsect.ui.viewmodel.InsectViewModel
 
+import android.content.Context
+import java.io.File
+import java.io.FileOutputStream
+import java.util.UUID
+import androidx.compose.ui.platform.LocalContext
+
+fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val file = File(context.filesDir, "insect_${UUID.randomUUID()}.jpg")
+        val outputStream = FileOutputStream(file)
+
+        inputStream.use { input ->
+            outputStream.use { output ->
+                input.copyTo(output)
+            }
+        }
+        file.absolutePath // Returns local file path
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsectFormScreen(
@@ -137,15 +161,19 @@ fun InsectFormScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
+	  val context = LocalContext.current
             Button(
                 onClick = {
                     if (isFormValid) {
+		      val savedImagePath = selectedImageUri?.let { uri ->
+				      saveImageToInternalStorage(context, uri)
+				  }
                         val newInsect = Insect(
                             nombreCientifico = nombreCientifico.trim(),
                             nombreComun = nombreComun.trim(),
                             orden = orden.trim(),
                             habitat = habitat.trim(),
-                            imageUri = selectedImageUri?.toString()
+                            imageUri = savedImagePath
                         )
                         viewModel.addInsect(newInsect)
                         onNavigateBack()
