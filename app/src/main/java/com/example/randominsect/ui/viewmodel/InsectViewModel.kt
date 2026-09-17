@@ -1,28 +1,36 @@
 package com.example.randominsect.ui.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.randominsect.data.database.AppDatabase
 import com.example.randominsect.data.model.Insect
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
-class InsectViewModel : ViewModel() {
-    private val _insects = mutableStateListOf<Insect>()
-    val insects: SnapshotStateList<Insect> get() = _insects
+class InsectViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val db = AppDatabase.getDatabase(application)
+    private val insectDao = db.insectDao()
+
+    // Room automatically updates this Flow whenever data in the 'insects' table changes
+    val insects: Flow<List<Insect>> = insectDao.getAllInsects()
 
     fun addInsect(insect: Insect) {
-        _insects.add(insect)
+        viewModelScope.launch {
+            insectDao.insertInsect(insect)
+        }
     }
 
     fun deleteInsect(insect: Insect) {
-        _insects.remove(insect)
-
+        viewModelScope.launch {
+            insectDao.deleteInsect(insect)
+        }
     }
 
-
     fun updateInsect(updatedInsect: Insect) {
-        val index = _insects.indexOfFirst { it.id == updatedInsect.id }
-        if (index != -1) {
-            _insects[index] = updatedInsect
+        viewModelScope.launch {
+            insectDao.updateInsect(updatedInsect)
         }
     }
 }

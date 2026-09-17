@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.randominsect.ui.components.InsectCard
 import com.example.randominsect.ui.viewmodel.InsectViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle // O collectAsState()
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +33,7 @@ fun InsectListScreen(
             }
         }
     ) { paddingValues ->
-        val insects = viewModel.insects
+        val insects by viewModel.insects.collectAsStateWithLifecycle(initialValue = emptyList())
 
         if (insects.isEmpty()) {
             Box(
