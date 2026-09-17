@@ -19,6 +19,14 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.randominsect.data.model.Insect
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.background
+
 import com.example.randominsect.ui.components.ImageDetailDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,8 +41,7 @@ fun InsectCard(
     val haptic = LocalHapticFeedback.current
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart || dismissValue == SwipeToDismissBoxValue.StartToEnd) {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
                 onDelete(insect)
                 true
             } else {
@@ -45,14 +52,51 @@ fun InsectCard(
 
     SwipeToDismissBox(
         state = dismissState,
+        enableDismissFromStartToEnd = false, // Disables left-to-right swipe
+        enableDismissFromEndToStart = true,  // Enables right-to-left swipe
         backgroundContent = {
-            val color = when (dismissState.targetValue) {
-                SwipeToDismissBoxValue.EndToStart, SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.errorContainer
-                else -> MaterialTheme.colorScheme.surface
+            val isWillDismiss = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+
+            val backgroundColor = if (isWillDismiss) {
+                MaterialTheme.colorScheme.errorContainer
+            } else {
+                MaterialTheme.colorScheme.surface
             }
+
+            val infiniteTransition = rememberInfiniteTransition(label = "HeartbeatPulse")
+
+            val pulseScale by if (isWillDismiss) {
+                infiniteTransition.animateFloat(
+                    initialValue = 0.85f,
+                    targetValue = 1.45f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 180),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "PulseScale"
+                )
+            } else {
+                remember { mutableFloatStateOf(1f) }
+            }
+
+            val pulseAlpha by if (isWillDismiss) {
+                infiniteTransition.animateFloat(
+                    initialValue = 0.6f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 180),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "PulseAlpha"
+                )
+            } else {
+                remember { mutableFloatStateOf(0.5f) }
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(backgroundColor)
                     .clip(RoundedCornerShape(12.dp))
                     .padding(8.dp),
                 contentAlignment = Alignment.CenterEnd
@@ -61,12 +105,19 @@ fun InsectCard(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Eliminar",
                     tint = MaterialTheme.colorScheme.onErrorContainer,
-                    modifier = Modifier.padding(end = 16.dp)
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .graphicsLayer(
+                            scaleX = pulseScale,
+                            scaleY = pulseScale,
+                            alpha = pulseAlpha
+                        )
                 )
             }
         },
         modifier = modifier
     ) {
+        // Card layout content...
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,7 +142,7 @@ fun InsectCard(
                             contentDescription = insect.nombreComun,
                             modifier = Modifier
                                 .size(64.dp)
-                                .clip(RoundedCornerShape(8.dp)),
+                                .clip(RoundedCornerShape(8.dp))
                                 .clickable { showImageModal = true },
                             contentScale = ContentScale.Crop
                         )
