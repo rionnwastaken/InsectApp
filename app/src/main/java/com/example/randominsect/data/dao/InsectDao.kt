@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface InsectDao {
 
-    @Query("SELECT * FROM insects ORDER BY nombreComun ASC")
+    @Query("SELECT * FROM insects ORDER BY createdAt ASC")
     fun getAllInsects(): Flow<List<Insect>>
 
     @Query("SELECT * FROM insects WHERE id = :id")

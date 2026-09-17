@@ -12,5 +12,6 @@ data class Insect(
     val nombreComun: String,
     val orden: String,
     val habitat: String,
-    val imageUri: String? = null
+    val imageUri: String? = null,
+    val createdAt: Long = System.currentTimeMillis() // Auto-generates creation time
 )

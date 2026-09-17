@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.randominsect.data.dao.InsectDao
 import com.example.randominsect.data.model.Insect
 
-@Database(entities = [Insect::class], version = 1, exportSchema = false)
+@Database(entities = [Insect::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // Define abstract getters for all DAOs in your app
