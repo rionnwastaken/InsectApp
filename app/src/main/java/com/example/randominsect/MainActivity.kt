@@ -59,8 +59,10 @@ class MainActivity : ComponentActivity() {
             val isDarkModePref by ThemePreferences.isDarkMode.collectAsState(initial = null)
             val isDarkTheme = isDarkModePref ?: isSystemInDarkTheme()
 
+            val isUserSignedIn = false
+
             RandomInsectTheme(darkTheme = isDarkTheme) {
-                AppNavigation()
+                AppNavigation(isUserSignedIn = isUserSignedIn)
             }
         }
     }
