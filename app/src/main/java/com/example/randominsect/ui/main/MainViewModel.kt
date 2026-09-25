@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.randominsect.data.AppContextProvider
 import com.example.randominsect.data.api.InsectApi
 import com.example.randominsect.data.db.FavoriteInsect.InsectEntity
+import com.example.randominsect.data.db.BlackList.BlackListEntity
 import com.example.randominsect.data.repository.FavoriteRepository
+import com.example.randominsect.data.repository.BlacklistRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class MainViewModel(
-    private val favoriteRepository: FavoriteRepository = FavoriteRepository.getInstance()
+    private val favoriteRepository: FavoriteRepository = FavoriteRepository.getInstance(),
+    private val blacklistRepository: BlacklistRepository = BlacklistRepository.getInstance()
 ) : ViewModel() {
 
     private val _generatedInsect = MutableStateFlow<InsectEntity?>(null)
@@ -71,6 +74,33 @@ class MainViewModel(
                 _error.value = e.message ?: "An unknown error occurred"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Agrega el insecto mostrado a la blacklist y genera uno nuevo de inmediato.
+     */
+    fun addToBlacklist(description: String = "") {
+        val insect = _generatedInsect.value ?: return
+
+        viewModelScope.launch {
+            try {
+                val blacklistEntry = BlackListEntity(
+                    taxa = insect.scientificName ?: insect.commonName ?: "Insecto desconocido",
+                    description = description,
+                    iNaturalistId = insect.taxonID,
+                    isBlacklisted = true
+                )
+
+                blacklistRepository.insert(blacklistEntry)
+
+                // Carga un nuevo insecto (la API leerá la blacklist actualizada gracias al DAO)
+                generateRandomInsect()
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error adding insect to blacklist", e)
+                _error.value = "No se pudo agregar el insecto a la lista negra."
             }
         }
     }

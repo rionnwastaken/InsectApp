@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
@@ -157,13 +158,37 @@ fun MainScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    //Fila de acciones (Botón de Favoritos + Botón de Blacklist)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AddToFavoritesButton(
+                            isSaved = isSaved,
+                            isSaving = isSaving,
+                            onClick = { viewModel.saveCurrentInsectToFavorites() }
+                        )
 
-                    AddToFavoritesButton(
-                        isSaved = isSaved,
-                        isSaving = isSaving,
-                        onClick = { viewModel.saveCurrentInsectToFavorites() }
-                    )
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        //Botón para agregar a la lista negra
+                        Button(
+                            onClick = { viewModel.addToBlacklist() },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Blacklist",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Blacklist",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
 
                     val wikiUrl = insect?.wikipedia_url
                     if (!wikiUrl.isNullOrBlank()) {
