@@ -93,4 +93,11 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+// Credential Manager
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+
+    // Google ID library
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }
